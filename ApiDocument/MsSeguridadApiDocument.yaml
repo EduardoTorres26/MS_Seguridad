@@ -1,0 +1,584 @@
+openapi: 3.0.3
+info:
+  title: Swagger Microservicio Seguridad - OpenAPI 1.0
+  description: |-
+    Esta api es la interfaz para conectar el microservicio de Seguridad
+     
+    Some useful links:
+    - [The MicroService repository](https://github.com/EduardoTorres26/MS_Seguridad)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: MSseguridad@gmail.com
+  license:
+    name: MIT License 
+    url: https://opensource.org/license/mit
+  version: N/A
+
+servers:
+  - url: http://127.0.0.1:8080/api/v1
+
+tags:
+  - name: User
+    description: Toda la información basica sobre los usuario
+    externalDocs:
+      description: Find out more
+      url: http://127.0.0.1:8080/api/v1/Infouser
+  - name: Permissions
+    description: Toda la información que indican los permisos del usuario
+    externalDocs:
+      description: Find out more about our Permissions
+      url: http://127.0.0.1:8080/api/v1/InfoPermissions
+  - name: Roles
+    description: Toda la información que indican los Roles del usuario
+    externalDocs:
+      description: Find out more about our Roles
+      url: http://127.0.0.1:8080/api/v1/InfoRoles
+paths:
+  /user:
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    post:
+      tags:
+        - User
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /user/validate:   # Nuevo endpoint para validar usuario
+    post:
+      tags:
+        - User
+      summary: Validar usuario
+      description: Permite validar un usuario.
+      operationId: validateUser
+      requestBody:
+        description: Información del usuario a validar.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserValidationRequest'
+      responses:
+        '200':
+          description: Usuario validado correctamente.
+        '401':
+          description: Usuario no válido.   
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get all users
+      description: Retrieves all available users.
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+          
+  /user/{username}:
+    get:
+      tags:
+        - User
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - User
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+        - User
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /Permission:
+    post:
+      tags:
+        - Permissions
+      summary: Create Permission
+      description: This can only be done by the logged in administrator.
+      operationId: createPermission
+      requestBody:
+        description: Created Permission object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Permissions'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Permissions'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Permissions'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permissions'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Permissions'     
+                
+  /Permissions:
+    get:
+      tags:
+        - Permissions
+      summary: Get all Permissions
+      description: Retrieves all available Permissions.
+      operationId: getAllPermissions
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permissions'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Permissions'
+        '400':
+          description: Invalid Permissions supplied
+        '404':
+          description: Permissions not found
+          
+  /Permissions/{ID}:
+    get:
+      tags:
+        - Permissions
+      summary: Get Permission by ID
+      description: ''
+      operationId: getpermissionsByid
+      parameters:
+        - name: ID
+          in: path
+          description: 'The name that needs to be fetched. Use Permissions1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permissions'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Permissions'
+        '400':
+          description: Invalid Permissions supplied
+        '404':
+          description: Permission not found
+    put:
+      tags:
+        - Permissions
+      summary: Update Permissions
+      description: This can only be done by the logged in administrator.
+      operationId: updatePermissions
+      parameters:
+        - name: ID
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent Permissions in the system
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Permissions'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Permissions'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Permissions'
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+        - Permissions
+      summary: Delete Permissions
+      description: This can only be done by the logged in administrator.
+      operationId: deletePermissions
+      parameters:
+        - name: ID
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid Permission supplied
+        '404':
+          description: Permission not found 
+  /Role:
+    post:
+      tags:
+        - Roles
+      summary: Create a Role
+      description: This can only be done by the logged in administrator.
+      operationId: createRole
+      requestBody:
+        description: Created Role object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roles'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Roles'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Roles'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Roles'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Roles'     
+                
+  /Roles:
+    get:
+      tags:
+        - Roles
+      summary: Get all Roles
+      description: Retrieves all available Roles.
+      operationId: getAllRoles
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Roles'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Roles'
+        '400':
+          description: Invalid Role supplied
+        '404':
+          description: Role not found
+          
+  /Roles/{ID}:
+    get:
+      tags:
+        - Roles
+      summary: Get Roles by ID
+      description: ''
+      operationId: getRolesByid
+      parameters:
+        - name: ID
+          in: path
+          description: 'The name that needs to be fetched. Use Roles1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Roles'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Roles'
+        '400':
+          description: Invalid Roles supplied
+        '404':
+          description: Roles not found
+    put:
+      tags:
+        - Roles
+      summary: Update Roles
+      description: This can only be done by the logged in administrator.
+      operationId: updateRoles
+      parameters:
+        - name: ID
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent Roles in the system
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roles'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Roles'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Roles'
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+        - Roles
+      summary: Delete Roles
+      description: This can only be done by the logged in administrator.
+      operationId: deleteRoles
+      parameters:
+        - name: ID
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid Roles supplied
+        '404':
+          description: Roles not found             
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 11
+        username:
+          type: string
+          example: 1036965013
+        email:
+          type: string
+          example: checo@email.com
+        password:
+          type: string
+          example: 'chestapen111'
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+        RolId:
+          type: integer
+          description: Id taken from rol's table
+          format: int32
+          example: 1  
+      xml:
+        name: user
+    Permissions:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        Name:
+          type: string
+          example: Lectura
+      xml:
+        name: permissions  
+    Roles:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        Name:
+          type: string
+          example: Administrador
+      xml:
+        name: roles
+    UserValidationRequest:   # Definición del esquema para la solicitud de validación de usuario
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password    
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+  requestBodies:
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
