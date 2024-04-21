@@ -39,11 +39,3 @@ Para ejecutar la aplicación localmente, sigue estos pasos:
 3. Abre el proyecto en tu IDE preferido.
 4. Ejecuta la aplicación como una aplicación Spring Boot.
 
-## Contribución
-
-Si deseas contribuir a este proyecto, ¡estás más que bienvenido! Siéntete libre de abrir un problema o enviar una solicitud de extracción.
-
-## Autor
-
-- [Tu nombre o alias](https://github.com/tu-usuario) - Descripción corta sobre ti.
-
